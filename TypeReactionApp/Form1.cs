@@ -19,6 +19,13 @@ namespace TypeReactionApp
         private const int MaxMeasurements = 12; // Maximális mérési szám
         private bool _askBeforeOverwrite = true; // Beállítás, hogy kérjen-e megerősítést mentés előtt
         private const string DefaultFileName = "reaction_times.csv"; // Alapértelmezett fájlnév
+        
+        // Made by @justdawee
+        // Lukács Dávid Roland (HHC62Y)
+        // 2024.10.31.
+        // TypeReactionApp
+        // A program célja, hogy mérje a felhasználó reakcióidejét egy véletlenszerűen generált karakterre.
+        // A programban lehetőség van a mérési eredmények mentésére és betöltésére is.
 
         public Form1()
         {
