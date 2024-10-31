@@ -101,7 +101,7 @@
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(201, 248);
+            this.label3.Location = new System.Drawing.Point(201, 253);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(117, 20);
             this.label3.TabIndex = 4;
@@ -109,7 +109,7 @@
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(201, 268);
+            this.label4.Location = new System.Drawing.Point(201, 273);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(117, 20);
             this.label4.TabIndex = 4;
@@ -117,7 +117,7 @@
             // 
             // label_average
             // 
-            this.label_average.Location = new System.Drawing.Point(311, 245);
+            this.label_average.Location = new System.Drawing.Point(311, 250);
             this.label_average.Name = "label_average";
             this.label_average.Size = new System.Drawing.Size(59, 20);
             this.label_average.TabIndex = 4;
@@ -126,7 +126,7 @@
             // 
             // label_std
             // 
-            this.label_std.Location = new System.Drawing.Point(311, 265);
+            this.label_std.Location = new System.Drawing.Point(311, 270);
             this.label_std.Name = "label_std";
             this.label_std.Size = new System.Drawing.Size(59, 20);
             this.label_std.TabIndex = 4;
@@ -176,8 +176,8 @@
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + S";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+            this.saveToolStripMenuItem.Text = "Mentés";
             this.saveToolStripMenuItem.ToolTipText = "Jelenlegi lista mentése.";
             // 
             // saveAsToolStripMenuItem
@@ -185,8 +185,8 @@
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + Alt + S";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.saveAsToolStripMenuItem.Text = "Save as...";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+            this.saveAsToolStripMenuItem.Text = "Mentés másként...";
             this.saveAsToolStripMenuItem.ToolTipText = "Mentés egy kiválasztott helyre...";
             // 
             // loadToolStripMenuItem
@@ -194,8 +194,8 @@
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
             this.loadToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + O";
             this.loadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.loadToolStripMenuItem.Text = "Load";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+            this.loadToolStripMenuItem.Text = "Betöltés";
             this.loadToolStripMenuItem.ToolTipText = "Előző mentés betöltése.";
             // 
             // loadFromToolStripMenuItem
@@ -203,8 +203,8 @@
             this.loadFromToolStripMenuItem.Name = "loadFromToolStripMenuItem";
             this.loadFromToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + Alt + O";
             this.loadFromToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) | System.Windows.Forms.Keys.O)));
-            this.loadFromToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
-            this.loadFromToolStripMenuItem.Text = "Load from...";
+            this.loadFromToolStripMenuItem.Size = new System.Drawing.Size(254, 22);
+            this.loadFromToolStripMenuItem.Text = "Betöltés fájlból...";
             this.loadFromToolStripMenuItem.ToolTipText = "Betöltés egy kiválaszott fájlból...";
             // 
             // optionsToolStripMenuItem
