@@ -1,113 +1,146 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Timer = System.Windows.Forms.Timer;
 
 namespace TypeReactionApp
 {
     public partial class Form1 : Form
     {
-        private Random random = new Random();
-        private Stopwatch stopwatch = new Stopwatch();
-        private Timer countdownTimer;
-        private int countdownValue = 3;
-        private bool isRunning = false;
-        
+        private readonly Random _random = new Random();
+        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private Timer _countdownTimer;
+        private bool _isRunning;
+        private int _countdownValue = 3; // Visszaszámlálási idő
+        private int _measurementCount;
+        private const int MaxMeasurements = 12; // Maximális mérési szám
+        private bool _askBeforeOverwrite = true; // Beállítás, hogy kérjen-e megerősítést mentés előtt
+        private const string DefaultFileName = "reaction_times.csv"; // Alapértelmezett fájlnév
+
         public Form1()
         {
             InitializeComponent();
             InitializeCountdownTimer();
+            InitializeContextMenu();
+            InitializeMenuEvents();
         }
         
+        private void InitializeMenuEvents()
+        {
+            saveToolStripMenuItem.Click += async (s, e) => await SaveToFile(DefaultFileName); // Alapértelmezett fájlba mentés
+            saveAsToolStripMenuItem.Click += async (s, e) => await SaveAs(); // Mentés másként
+            loadToolStripMenuItem.Click += async (s, e) => await LoadFromFile(DefaultFileName); // Alapértelmezett fájlból betöltés
+            loadFromToolStripMenuItem.Click += async (s, e) => await LoadFromCustomFile(); // Fájlból betöltés
+            askBeforeOverwriteToolStripMenuItem.CheckedChanged += ToggleAskBeforeOverwrite; // Megerősítés kérésének be- és kikapcsolása
+        }
+
         private void InitializeCountdownTimer()
         {
-            countdownTimer = new Timer();
-            countdownTimer.Interval = 1000; // 1 másodperc
-            countdownTimer.Tick += CountdownTimer_Tick;
+            _countdownTimer = new Timer();
+            _countdownTimer.Interval = 1000; // 1 másodperc
+            _countdownTimer.Tick += CountdownTimer_Tick;
         }
-        
+
+        private void InitializeContextMenu()
+        {
+            ContextMenuStrip contextMenu = new ContextMenuStrip();
+            ToolStripMenuItem deleteItem = new ToolStripMenuItem("Törlés");
+            deleteItem.Click += (s, e) => DeleteSelectedItem(); // Kijelölt elem törlése
+            contextMenu.Items.Add(deleteItem);
+            listBox_reactionTimes.ContextMenuStrip = contextMenu;
+        }
+
         private void CountdownTimer_Tick(object sender, EventArgs e)
         {
-            if (countdownValue > 0)
+            if (_countdownValue > 0)
             {
-                label_randomLetter.Text = countdownValue.ToString();
-                countdownValue--;
+                label_randomLetter.Text = _countdownValue.ToString();
+                _countdownValue--;
             }
             else
             {
-                countdownTimer.Stop();
-                label_randomLetter.Text = ""; // Töröljük a visszaszámláló szöveget
-                GenerateRandomLetter();       // Véletlenszerű betű generálása
-                isRunning = true;
-                stopwatch.Start();
+                _countdownTimer.Stop();
+                label_randomLetter.Text = "Start!";
+                _isRunning = true;
+                _stopwatch.Start();
                 txtBox_reaction.Enabled = true;
                 txtBox_reaction.Focus();
+                GenerateRandomLetter();
             }
         }
 
         private void btn_Exit_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            Application.Exit(); // Kilépés az alkalmazásból
         }
 
         private void btn_Start_Click(object sender, EventArgs e)
         {
-            if (!isRunning)
+            if (!_isRunning)
             {
-                // Indítás
-                countdownValue = 3;
+                _measurementCount = 0;
+                _countdownValue = 3;
                 label_randomLetter.Text = "3";
                 txtBox_reaction.Enabled = false;
                 listBox_reactionTimes.Items.Clear();
                 label_average.Text = "0 ms";
                 label_std.Text = "0 ms";
-                stopwatch.Reset();
-                btn_Start.Text = "Stop";
-                countdownTimer.Start();
+                label_actualMeasurement.Text = $"0/{MaxMeasurements}";
+                _stopwatch.Reset();
+                btn_Start.Text = "Leállítás";
+                _countdownTimer.Start();
             }
             else
             {
-                // Leállítás
-                isRunning = false;
-                stopwatch.Stop();
-                btn_Start.Text = "Start";
-                label_randomLetter.Text = ""; // vagy alapértelmezett érték
+                StopMeasurement();
             }
         }
-        
+
+        private void StopMeasurement()
+        {
+            _isRunning = false;
+            _stopwatch.Stop();
+            btn_Start.Text = "Indítás";
+            label_randomLetter.Text = "-";
+        }
+
         private void GenerateRandomLetter()
         {
-            // Véletlenszerű betű kiválasztása A és Z között
-            char randomLetter = (char)random.Next('A', 'Z' + 1);
+            char randomLetter = (char)_random.Next('A', 'Z' + 1);
             label_randomLetter.Text = randomLetter.ToString();
         }
 
         private void txtBox_reaction_KeyPress(object sender, KeyPressEventArgs e)
         {
+            if (_measurementCount >= MaxMeasurements) return;
+
             if (e.KeyChar.ToString().ToUpper() == label_randomLetter.Text)
             {
-                stopwatch.Stop();  // Megállítjuk az időzítőt
-                long reactionTime = stopwatch.ElapsedMilliseconds;  // Reakcióidő mérése
-
-                // Idő hozzáadása a listához
+                _stopwatch.Stop();
+                long reactionTime = _stopwatch.ElapsedMilliseconds;
                 listBox_reactionTimes.Items.Add($"{reactionTime} ms");
+
+                _measurementCount++;
+                label_actualMeasurement.Text = $"{_measurementCount}/{MaxMeasurements}";
 
                 UpdateStatistics();
 
-                // Új betű generálása és időzítő újraindítása
-                GenerateRandomLetter();
-                stopwatch.Restart();
-                txtBox_reaction.Clear();
+                if (_measurementCount < MaxMeasurements)
+                {
+                    GenerateRandomLetter();
+                    txtBox_reaction.Clear();
+                    _stopwatch.Restart();
+                }
+                else
+                {
+                    StopMeasurement();
+                }
             }
         }
 
-        
         private void UpdateStatistics()
         {
             var times = listBox_reactionTimes.Items.Cast<string>()
@@ -119,8 +152,89 @@ namespace TypeReactionApp
                 double average = times.Average();
                 double stdDev = Math.Sqrt(times.Average(v => Math.Pow(v - average, 2)));
 
-                label_average.Text = $@"{average:F0} ms";
-                label_std.Text = $@"{stdDev:F0} ms";
+                label_average.Text = $"{average:F0} ms";
+                label_std.Text = $"{stdDev:F0} ms";
+            }
+        }
+
+        private void DeleteSelectedItem()
+        {
+            if (listBox_reactionTimes.SelectedIndex >= 0)
+            {
+                listBox_reactionTimes.Items.RemoveAt(listBox_reactionTimes.SelectedIndex);
+                UpdateStatistics();
+            }
+        }
+
+        private void ToggleAskBeforeOverwrite(object sender, EventArgs e)
+        {
+            _askBeforeOverwrite = !_askBeforeOverwrite;
+            ((ToolStripMenuItem)sender).Checked = _askBeforeOverwrite;
+        }
+        
+        private async Task SaveToFile(string fileName)
+        {
+            if (_askBeforeOverwrite && File.Exists(fileName))
+            {
+                var result = MessageBox.Show("Biztosan felülírja a próbálkozások listáját?", "Megerősítés", MessageBoxButtons.YesNo);
+                if (result == DialogResult.No) return;
+            }
+
+            using (StreamWriter writer = new StreamWriter(fileName))
+            {
+                foreach (var item in listBox_reactionTimes.Items)
+                {
+                    await writer.WriteLineAsync(item.ToString());
+                }
+            }
+        }
+
+        private async Task SaveAs()
+        {
+            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Filter = "CSV fájlok (*.csv)|*.csv";
+                saveFileDialog.Title = "Mentés másként";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    await SaveToFile(saveFileDialog.FileName);
+                }
+            }
+        }
+
+        private async Task LoadFromFile(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                MessageBox.Show("Az alapértelmezett fájl nem található.");
+                return;
+            }
+
+            listBox_reactionTimes.Items.Clear();
+
+            using (StreamReader reader = new StreamReader(fileName))
+            {
+                string line;
+                while ((line = await reader.ReadLineAsync()) != null)
+                {
+                    listBox_reactionTimes.Items.Add(line);
+                }
+            }
+
+            UpdateStatistics();
+        }
+
+        private async Task LoadFromCustomFile()
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "CSV fájlok (*.csv)|*.csv";
+                openFileDialog.Title = "Fájl betöltése";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    await LoadFromFile(openFileDialog.FileName);
+                }
             }
         }
     }
